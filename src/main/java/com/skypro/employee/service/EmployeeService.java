@@ -1,61 +1,33 @@
 package com.skypro.employee.service;
 
 import com.skypro.employee.model.Employee;
-import com.skypro.employee.record.EmployeeRequest;
+import com.skypro.employee.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class EmployeeService {
-    private final Map<Integer, Employee> employees = new HashMap<>();
+    private final EmployeeRepository employeeRepository;
 
-    public Collection<Employee> getAllEmployees() {
-        return this.employees.values();
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
     }
 
-    public Employee addEmployee(EmployeeRequest employeeRequest) {
-        if (employeeRequest.getFirstName() == null || employeeRequest.getLastName() == null) {
-            throw new IllegalArgumentException("Employee name should be set.");
-        }
-        Employee employee = new Employee(employeeRequest.getFirstName(),
-                employeeRequest.getLastName(),
-                employeeRequest.getDepartment(),
-                employeeRequest.getSalary());
-
-        this.employees.put(employee.getId(), employee);
-        return employee;
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
     }
 
-
-    public int getSalarySum() {
-        return employees.values()
-                .stream()
-                .mapToInt(Employee::getSalary)
-                .sum();
+    public void addEmployee(Employee employee) {
+        employeeRepository.save(employee);
     }
 
-    public Employee getSalaryMin() {
-        return employees.values()
-                .stream()
-                .min(Comparator.comparingInt(Employee::getSalary)).orElse(null);
+    public void delete(Integer id) {
+        employeeRepository.deleteById(id);
     }
 
-    public Employee getSalaryMax() {
-        return employees.values()
-                .stream()
-                .max(Comparator.comparingInt(Employee::getSalary)).orElse(null);
-    }
-
-    public Collection<Employee> getEmployeesHighSalary() {
-        double average = employees.values().stream().mapToInt(Employee::getSalary).average().orElse(0);
-        return employees.values()
-                .stream()
-                .filter(s -> s.getSalary() > average)
-                .toList();
+    public Employee getEmployee(Integer id) {
+        return employeeRepository.findById(id).orElse(null);
     }
 }
 

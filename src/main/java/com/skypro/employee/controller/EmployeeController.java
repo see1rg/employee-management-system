@@ -2,17 +2,16 @@ package com.skypro.employee.controller;
 
 
 import com.skypro.employee.model.Employee;
-import com.skypro.employee.record.EmployeeRequest;
 import com.skypro.employee.service.EmployeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-
-import java.util.Collection;
+import java.util.List;
 
 @RestController
+@RequestMapping("/api")
+@CrossOrigin("*")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
@@ -20,33 +19,25 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @GetMapping("/employees")
-    public Collection<Employee> getAllEmployees() {
-        return this.employeeService.getAllEmployees();
+    @GetMapping("/data_list/employee")
+    public List<Employee> getAllEmployees() {
+        return employeeService.getAllEmployees();
     }
 
-    @PostMapping("/employees")
-    public Employee createEmployee(@RequestBody EmployeeRequest employeeRequest) {
-        return this.employeeService.addEmployee(employeeRequest);
-    }
+    @PostMapping("/employee")
+    public ResponseEntity<Employee> create(@RequestBody Employee employee) {
+        employeeService.addEmployee(employee);
 
-    @GetMapping("/employees/salary/sum")
-    public int getSalarySum() {
-        return this.employeeService.getSalarySum();
-    }
+        return new ResponseEntity<>(employee, HttpStatus.CREATED);}
 
-    @GetMapping("/employees/salary/min")
-    public Employee getSalaryMin() {
-        return this.employeeService.getSalaryMin();
+    @DeleteMapping("/employee/{id}")
+    public ResponseEntity<Employee> delete(@PathVariable Integer id) {
+        Employee employee = employeeService.getEmployee(id);
+        if (employee != null) {
+            employeeService.delete(id);
+            return new ResponseEntity<>(employee, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+        }
     }
-
-    @GetMapping("/employees/salary/max")
-    public Employee getSalaryMax() {
-        return this.employeeService.getSalaryMax();
     }
-
-    @GetMapping("employees/high-salary")
-    Collection<Employee> getEmployeesHighSalary() {
-            return this.employeeService.getEmployeesHighSalary();
-    }
-}

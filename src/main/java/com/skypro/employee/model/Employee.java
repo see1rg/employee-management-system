@@ -1,19 +1,28 @@
 package com.skypro.employee.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Employee {
-    private static int counter;
-    private final int id;
-    private final String firstName;
-    private final String lastName;
-    private final int department;
-    private final int salary;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String firstName;
+    private String lastName;
+    private int department;
+    private int salary;
 
     public Employee( String firstName, String lastName, int department, int salary) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.department = department;
         this.salary = salary;
-        this.id = counter++;
+    }
+
+    public Employee() {
 
     }
 
